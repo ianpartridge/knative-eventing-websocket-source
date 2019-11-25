@@ -61,7 +61,7 @@ func main() {
 			log.Println("error while reading message:", err)
 			return
 		}
-        log.Print(string(message))
+		log.Print(string(message))
 
 		event := cloudevents.Event{
 			Context: cloudevents.EventContextV03{

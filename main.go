@@ -2,10 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/cloudevents/sdk-go/pkg/cloudevents"
-	"github.com/cloudevents/sdk-go/pkg/cloudevents/client"
-	"github.com/cloudevents/sdk-go/pkg/cloudevents/transport/http"
-	"github.com/cloudevents/sdk-go/pkg/cloudevents/types"
+	"github.com/cloudevents/sdk-go"
 	"github.com/gorilla/websocket"
 	"github.com/kelseyhightower/envconfig"
 	"log"
@@ -31,15 +28,15 @@ func main() {
 	}
 
 	log.Print("Connecting to sink: ", sink)
-	t, err := http.New(
-		http.WithTarget(sink),
-		http.WithEncoding(http.BinaryV02),
+	t, err := cloudevents.NewHTTPTransport(
+		cloudevents.WithTarget(sink),
+		cloudevents.WithEncoding(cloudevents.HTTPBinaryV02),
 	)
 	if err != nil {
 		log.Fatalf("failed to create transport, " + err.Error())
 	}
 
-	ce, err := client.New(t)
+	ce, err := cloudevents.NewClient(t)
 	if err != nil {
 		log.Fatalf("unable to create cloudevent client: " + err.Error())
 	}
@@ -63,14 +60,12 @@ func main() {
 		}
 		log.Print(string(message))
 
-		event := cloudevents.Event{
-			Context: cloudevents.EventContextV03{
-				Type:   "websocket-event",
-				Source: *types.ParseURLRef(source),
-				ID:     "foo",
-			}.AsV02(),
-			Data: message,
-		}
+		event := cloudevents.NewEvent()
+		event.SetID("ABC-123")
+		event.SetType("websocket-event")
+		event.SetSource(source)
+		event.SetData(message)
+
 		if _, _, err := ce.Send(context.TODO(), event); err != nil {
 			log.Printf("sending event to channel failed: %v", err)
 		}

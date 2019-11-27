@@ -30,7 +30,6 @@ func main() {
 	log.Print("Connecting to sink: ", sink)
 	t, err := cloudevents.NewHTTPTransport(
 		cloudevents.WithTarget(sink),
-		cloudevents.WithEncoding(cloudevents.HTTPBinaryV02),
 	)
 	if err != nil {
 		log.Fatalf("failed to create transport, " + err.Error())

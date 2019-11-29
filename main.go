@@ -60,7 +60,6 @@ func main() {
 		log.Print(string(message))
 
 		event := cloudevents.NewEvent()
-		event.SetID("ABC-123")
 		event.SetType("websocket-event")
 		event.SetSource(source)
 		event.SetData(message)
